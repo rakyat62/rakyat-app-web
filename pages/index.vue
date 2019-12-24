@@ -20,8 +20,7 @@
 
     <v-card v-for="i in 6"
             :key="i"
-            class="mt-2"
-            max-width="400"
+            class="mt-4"
     >
       <div class="body-1 px-4 py-2">
         ahmad sukri

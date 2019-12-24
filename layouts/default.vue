@@ -6,18 +6,16 @@
                clipped-left
                clipped-right
     >
-      <v-toolbar-title v-text="title" />
-      <v-btn icon>
-        <v-icon>mdi-application</v-icon>
-      </v-btn>
-      <v-btn icon>
-        <v-icon>mdi-minus</v-icon>
+      <v-toolbar-title v-text="title" @click="$router.push('/')" />
+      <v-btn :style="{textTransform:'capitalize'}"
+             text
+             small
+             to="/org"
+      >
+        Organization
       </v-btn>
       <v-spacer />
-      <v-btn
-        @click.stop="$vuetify.theme.dark = !$vuetify.theme.dark"
-        icon
-      >
+      <v-btn @click.stop="$vuetify.theme.dark = !$vuetify.theme.dark" icon>
         <v-icon>mdi-invert-colors</v-icon>
       </v-btn>
     </v-app-bar>

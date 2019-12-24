@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-navigation-drawer class="deep-purple accent-4"
+    <v-navigation-drawer class="deep-purple accent-4 d-none d-md-flex d-lg-flex"
                          dark
                          permanent
                          app

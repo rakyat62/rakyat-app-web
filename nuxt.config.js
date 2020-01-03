@@ -2,6 +2,8 @@ import path from 'path'
 import fs from 'fs'
 import colors from 'vuetify/es5/util/colors'
 
+require('dotenv').config()
+
 export default {
   mode: 'spa',
   /*
@@ -46,8 +48,6 @@ export default {
   ** Nuxt.js modules
   */
   modules: [
-    // Doc: https://github.com/nuxt-community/dotenv-module
-    '@nuxtjs/dotenv'
   ],
   /*
   ** vuetify module configuration
@@ -69,6 +69,9 @@ export default {
         }
       }
     }
+  },
+  env: {
+    apiBaseUrl: process.env.API_BASE_URL || 'wrongurl.com'
   },
   /*
   ** Build configuration

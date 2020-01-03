@@ -1,8 +1,11 @@
 <template>
   <v-container>
-    <v-row class="mt-1">
-      <v-col v-for="i in 6"
-             :key="i"
+    <div v-if="loadingIncidentLabels" class="text-center">
+      <v-progress-circular indeterminate size="70" />
+    </div>
+    <v-row v-else class="mt-1">
+      <v-col v-for="label in incidentLabels"
+             :key="label.id"
              cols="4"
              class="text-center my-0 py-0"
       >
@@ -12,9 +15,9 @@
                large
                fab
         >
-          <v-icon v-text="'mdi-home'" large />
+          <v-icon v-text="label.icon" large />
         </v-btn>
-        <p>{{ 'home' }}</p>
+        <p>{{ label.name }}</p>
       </v-col>
     </v-row>
 
@@ -63,9 +66,40 @@
 </template>
 
 <script>
+import gql from 'graphql-tag'
 
 export default {
-  components: {
+  data () {
+    return {
+      incidentLabels: [],
+      loadingIncidentLabels: false
+    }
+  },
+
+  created () {
+    this.getIncidentLabels()
+  },
+
+  methods: {
+    async getIncidentLabels () {
+      try {
+        this.loadingIncidentLabels = true
+        const { data } = await this.$apollo.query({
+          query: gql`{
+            incidentLabels {
+              id
+              name
+              icon
+            }
+          }`
+        })
+        this.incidentLabels = data.incidentLabels
+        this.loadingIncidentLabels = false
+      } catch (error) {
+        console.error(error)
+        this.loadingIncidentLabels = false
+      }
+    }
   }
 }
 </script>

@@ -6,9 +6,6 @@ require('dotenv').config()
 
 export default {
   mode: 'spa',
-  /*
-  ** Headers of the page
-  */
   head: {
     titleTemplate: '%s - ' + process.env.npm_package_name,
     title: process.env.npm_package_name || '',
@@ -21,38 +18,20 @@ export default {
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
   },
-  /*
-  ** Customize the progress-bar color
-  */
   loading: { color: '#fff' },
-  /*
-  ** Global CSS
-  */
   css: [
   ],
-  /*
-  ** Plugins to load before mounting the App
-  */
   plugins: [
     '~/plugins/location.client'
   ],
-  /*
-  ** Nuxt.js dev-modules
-  */
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
     ['@nuxtjs/eslint-module', { fix: true }],
     '@nuxtjs/vuetify'
   ],
-  /*
-  ** Nuxt.js modules
-  */
   modules: [
+    '@nuxtjs/apollo'
   ],
-  /*
-  ** vuetify module configuration
-  ** https://github.com/nuxt-community/vuetify-module
-  */
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
     theme: {
@@ -70,16 +49,14 @@ export default {
       }
     }
   },
-  env: {
-    apiBaseUrl: process.env.API_BASE_URL || 'wrongurl.com'
+  apollo: {
+    clientConfigs: {
+      default: {
+        httpEndpoint: process.env.GRAPHQL_API_URL || 'wrongurl.com'
+      }
+    }
   },
-  /*
-  ** Build configuration
-  */
   build: {
-    /*
-    ** You can extend webpack config here
-    */
     extend (config, ctx) {
     }
   },

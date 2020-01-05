@@ -1,5 +1,5 @@
 <template>
-  <v-app dark>
+  <v-app>
     <v-app-bar dense
                fixed
                app
@@ -15,9 +15,9 @@
         Organization
       </v-btn>
       <v-spacer />
-      <v-btn @click.stop="$vuetify.theme.dark = !$vuetify.theme.dark" icon>
+      <!-- <v-btn @click.stop="$vuetify.theme.dark = !$vuetify.theme.dark" icon>
         <v-icon>mdi-invert-colors</v-icon>
-      </v-btn>
+      </v-btn> -->
     </v-app-bar>
     <v-content>
       <nuxt />

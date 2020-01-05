@@ -51,16 +51,16 @@ export default {
   },
   apollo: {
     clientConfigs: {
-      default: {
-        httpEndpoint: process.env.GRAPHQL_API_URL || 'wrongurl.com'
-      }
+      default: '~/apollo/client-configs/default.js'
     }
   },
   build: {
     extend (config, ctx) {
     }
   },
-
+  env: {
+    graphqlApiUrl: process.env.GRAPHQL_API_URL
+  },
   server: {
     // https: {
     //   key: fs.readFileSync(path.resolve(__dirname, 'server.key')),

@@ -22,7 +22,8 @@ export default {
   css: [
   ],
   plugins: [
-    '~/plugins/location.client'
+    '~/plugins/location.client',
+    '~/plugins/google-maps'
   ],
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module

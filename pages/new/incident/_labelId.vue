@@ -9,7 +9,7 @@
     >
       <GmapMarker :position="userLocation" />
       <div slot="visible">
-        <v-btn @click="setUserLocation"
+        <v-btn @click="loadUserLocation"
                absolute
                bottom
                right
@@ -51,6 +51,7 @@
 <script>
 import { mutationCreateIncident, queryIncidents } from '../../../apollo/gql'
 import storageKeys from '../../../constants/storageKeys'
+import { getCurrentPosition } from '~/utils/location'
 
 export default {
   apollo: {
@@ -63,6 +64,7 @@ export default {
   data () {
     return {
       userLocation: { lat: 1, lng: 1 },
+      loadingLocation: false,
       gmapZoom: 7,
       additionalInformation: '',
       loadingSubmit: false
@@ -80,15 +82,12 @@ export default {
 
   async created () {
     await this.$nextTick()
-    this.setUserLocation()
+    this.userLocation.lat = parseFloat(localStorage.getItem(storageKeys.LOCATION_LAT))
+    this.userLocation.lng = parseFloat(localStorage.getItem(storageKeys.LOCATION_LNG))
+    this.gmapZoom = 16
   },
 
   methods: {
-    setUserLocation () {
-      this.userLocation.lat = parseFloat(localStorage.getItem(storageKeys.LOCATION_LAT))
-      this.userLocation.lng = parseFloat(localStorage.getItem(storageKeys.LOCATION_LNG))
-      this.gmapZoom = 16
-    },
     async submitIncident () {
       try {
         this.loadingSubmit = true
@@ -106,6 +105,18 @@ export default {
       } catch (error) {
         console.error(error)
         this.loadingSubmit = false
+      }
+    },
+    async loadUserLocation () {
+      try {
+        this.loadingLocation = true
+        const { lat, lng } = await getCurrentPosition()
+        this.userLocation.lat = lat
+        this.userLocation.lng = lng
+        this.loadingLocation = false
+      } catch (error) {
+        console.error(error)
+        this.loadingLocation = false
       }
     }
   }

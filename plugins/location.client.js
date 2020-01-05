@@ -1,10 +1,11 @@
 import storageKeys from '../constants/storageKeys'
+import { getCurrentPosition } from '../utils/location'
 
-export default () => {
-  navigator.geolocation.getCurrentPosition((position) => {
-    console.log('location', position)
-    localStorage.setItem(storageKeys.LOCATION_LAT, position.coords.latitude)
-    localStorage.setItem(storageKeys.LOCATION_LNG, position.coords.longitude)
-    localStorage.setItem(storageKeys.LOCATION_UPDATED_AT, position.timestamp)
-  })
+export default async () => {
+  const { lat, lng, timestamp } = await getCurrentPosition()
+  console.log('location', lat, lng, timestamp)
+
+  localStorage.setItem(storageKeys.LOCATION_LAT, lat)
+  localStorage.setItem(storageKeys.LOCATION_LNG, lng)
+  localStorage.setItem(storageKeys.LOCATION_UPDATED_AT, timestamp)
 }

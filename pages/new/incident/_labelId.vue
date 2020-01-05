@@ -20,7 +20,19 @@
       </div>
     </GmapMap>
     <v-container>
-      <div>new incident {{ incidentLabelId }}</div>
+      <v-row>
+        <v-col>
+          Laporkan
+          <br>
+          <v-chip label
+                  outlined
+                  large
+          >
+            <v-icon v-text="selectedIncident.icon" left />
+            {{ selectedIncident.name }}
+          </v-chip>
+        </v-col>
+      </v-row>
       <v-textarea v-model="additionalInformation"
                   outlined
                   label="Informasi Tambahan"
@@ -37,10 +49,17 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { mutationCreateIncident, queryIncidents } from '../../../apollo/gql'
 import storageKeys from '../../../constants/storageKeys'
 
 export default {
+  apollo: {
+    incidentLabels: {
+      query: queryIncidents,
+      update: data => data.incidentLabels
+    }
+  },
+
   data () {
     return {
       userLocation: { lat: 1, lng: 1 },
@@ -53,6 +72,9 @@ export default {
   computed: {
     incidentLabelId () {
       return parseInt(this.$route.params.labelId)
+    },
+    selectedIncident () {
+      return this.incidentLabels.find(i => i.id === this.incidentLabelId)
     }
   },
 
@@ -71,22 +93,7 @@ export default {
       try {
         this.loadingSubmit = true
         await this.$apollo.mutate({
-          mutation: gql`mutation($information: String!, $lat: Float!, $lng: Float!, $label: Int!) {
-            createIncident(input: {
-              information: $information
-              locationLat: $lat
-              locationLng: $lng
-              label: $label
-            }) {
-              id
-              information
-              locationLat
-              locationLng
-              createdBy {
-                username
-              }
-            }
-          }`,
+          mutation: mutationCreateIncident,
           variables: {
             information: this.additionalInformation,
             lat: this.userLocation.lat,

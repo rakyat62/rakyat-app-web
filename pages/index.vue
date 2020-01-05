@@ -58,11 +58,12 @@
         </v-img>
 
         <v-card-text class="text--primary">
-          <div>
-            <v-icon>
+          <div class="caption">
+            <!-- <v-icon>
               mdi-arrow-up-bold
             </v-icon>
-            16
+            16 -->
+            {{ formatDate(incident.createdAt, 'relative') }}
           </div>
         </v-card-text>
       </v-card>
@@ -72,6 +73,7 @@
 
 <script>
 import { queryIncidents } from '../apollo/gql'
+import { formatDate } from '~/utils/date'
 
 export default {
   data () {
@@ -88,6 +90,7 @@ export default {
   },
 
   methods: {
+    formatDate,
     async getIncidentLabels () {
       try {
         this.loadingIncidentLabels = true

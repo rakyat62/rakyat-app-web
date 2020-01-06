@@ -36,3 +36,16 @@ export const mutationCreateIncident = gql`mutation($information: String!, $lat: 
     }
   }
 }`
+
+export const mutationLogin = gql`mutation($username: String!, $password: String!) {
+  login(input: {
+    username: $username
+    password: $password
+  }) {
+    token
+    user {
+      username
+      email
+    }
+  }
+}`

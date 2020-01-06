@@ -30,6 +30,7 @@
 
 <script>
 export default {
+  middleware: 'auth',
   data () {
     return {
       title: 'Vuetify.js'

@@ -1,14 +1,8 @@
 import gql from 'graphql-tag'
 
-export const queryIncidents = gql`{
-  incidentLabels {
-    id
-    name
-    icon
-  }
+export const queryIncidentsMinimumFields = gql`{
   incidents {
     id
-    information
     status
     label {
       name
@@ -17,6 +11,14 @@ export const queryIncidents = gql`{
       username
     }
     createdAt
+  }
+}`
+
+export const queryIncidentLabels = gql`{
+  incidentLabels {
+    id
+    name
+    icon
   }
 }`
 

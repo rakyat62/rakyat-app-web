@@ -72,7 +72,7 @@
 </template>
 
 <script>
-import { queryIncidents } from '../apollo/gql'
+import gql from 'graphql-tag'
 import { formatDate } from '~/utils/date'
 
 export default {
@@ -96,7 +96,24 @@ export default {
         this.loadingIncidentLabels = true
         this.loadingIncidents = true
         const { data } = await this.$apollo.query({
-          query: queryIncidents,
+          query: gql`{
+            incidents {
+              id
+              status
+              label {
+                name
+              }
+              createdBy {
+                username
+              }
+              createdAt
+            }
+            incidentLabels {
+              id
+              name
+              icon
+            }
+          }`,
           fetchPolicy: 'network-only'
         })
         this.incidentLabels = data.incidentLabels

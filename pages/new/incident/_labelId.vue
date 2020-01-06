@@ -49,14 +49,14 @@
 </template>
 
 <script>
-import { mutationCreateIncident, queryIncidents } from '../../../apollo/gql'
+import { mutationCreateIncident, queryIncidentLabels } from '../../../apollo/gql'
 import storageKeys from '../../../constants/storageKeys'
 import { getCurrentPosition } from '~/utils/location'
 
 export default {
   apollo: {
     incidentLabels: {
-      query: queryIncidents,
+      query: queryIncidentLabels,
       update: data => data.incidentLabels
     }
   },

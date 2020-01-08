@@ -92,7 +92,7 @@ export default {
   data () {
     return {
       title: 'Rakyat62',
-      drawer: true,
+      drawer: false,
       authUser: {},
       avatarUrl: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.svhealthcare.org%2F_%2Fmedia%2Fimages%2Fmodules%2Fphysician-directory%2Fphysicians%2Flbtavatar0473.jpg%3Fh%3D192%26la%3Den%26w%3D192&f=1&nofb=1'
     }

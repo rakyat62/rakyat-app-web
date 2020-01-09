@@ -32,7 +32,7 @@
     >
       <v-list dense class="py-0">
         <v-list-item two-line>
-          <v-list-item-avatar>
+          <v-list-item-avatar tile>
             <img :src="avatarUrl">
           </v-list-item-avatar>
 

@@ -1,8 +1,14 @@
 <template>
   <v-container>
-    <div v-if="loadingIncidentLabels" class="text-center">
-      <v-progress-circular indeterminate size="70" />
-    </div>
+    <v-row v-if="loadingIncidentLabels" class="mt-1">
+      <v-col v-for="i in 3"
+             :key="`loadinglabel${i}`"
+             cols="4"
+             class="py-5"
+      >
+        <v-skeleton-loader type="avatar" tile />
+      </v-col>
+    </v-row>
     <v-row v-else class="mt-1">
       <v-col v-for="label in incidentLabels"
              :key="label.id"
@@ -21,9 +27,13 @@
       </v-col>
     </v-row>
 
-    <div v-if="loadingIncidents" class="text-center">
-      <v-progress-circular indeterminate size="70" />
-    </div>
+    <template v-if="loadingIncidents">
+      <v-skeleton-loader v-for="i in 4"
+                         :key="`loadinginc${i}`"
+                         type="card-heading, card"
+                         class="mt-4"
+      />
+    </template>
     <template v-else>
       <v-card v-for="incident in incidents"
               :key="incident.id"

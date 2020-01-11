@@ -18,7 +18,7 @@ export default {
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
   },
-  loading: { color: '#fff' },
+  loading: { color: colors.blue.darken2 },
   css: [
   ],
   plugins: [

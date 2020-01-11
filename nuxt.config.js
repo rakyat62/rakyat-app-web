@@ -57,7 +57,8 @@ export default {
     }
   },
   env: {
-    graphqlApiUrl: process.env.GRAPHQL_API_URL
+    graphqlApiUrl: process.env.GRAPHQL_API_URL,
+    gmapKey: process.env.GMAP_KEY
   },
   server: {
     // https: {

@@ -3,6 +3,6 @@ import * as VueGoogleMaps from 'vue2-google-maps'
 
 Vue.use(VueGoogleMaps, {
   load: {
-    key: 'AIzaSyAgNSeba8UOB_WS4ilsnY-KpAFAMOFjN9o'
+    key: process.env.gmapKey
   }
 })

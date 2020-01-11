@@ -50,8 +50,7 @@
 
 <script>
 import { mutationCreateIncident, queryIncidentLabels } from '../../../apollo/gql'
-import storageKeys from '../../../constants/storageKeys'
-import { getCurrentPosition } from '~/utils/location'
+import { loadCurrentPosition, getCachedCurrentPosition } from '~/utils/location'
 
 export default {
   apollo: {
@@ -62,8 +61,11 @@ export default {
   },
 
   data () {
+    const { lat, lng } = getCachedCurrentPosition()
+
     return {
-      userLocation: { lat: 1, lng: 1 },
+      userLocation: { lat, lng },
+      incidentLabels: [],
       loadingLocation: false,
       gmapZoom: 7,
       additionalInformation: '',
@@ -76,14 +78,12 @@ export default {
       return parseInt(this.$route.params.labelId)
     },
     selectedIncident () {
-      return this.incidentLabels.find(i => i.id === this.incidentLabelId)
+      return this.incidentLabels.find(i => i.id === this.incidentLabelId) || {}
     }
   },
 
   async created () {
     await this.$nextTick()
-    this.userLocation.lat = parseFloat(localStorage.getItem(storageKeys.LOCATION_LAT))
-    this.userLocation.lng = parseFloat(localStorage.getItem(storageKeys.LOCATION_LNG))
     this.gmapZoom = 16
   },
 
@@ -110,7 +110,7 @@ export default {
     async loadUserLocation () {
       try {
         this.loadingLocation = true
-        const { lat, lng } = await getCurrentPosition()
+        const { lat, lng } = await loadCurrentPosition()
         this.userLocation.lat = lat
         this.userLocation.lng = lng
         this.loadingLocation = false

@@ -8,7 +8,8 @@
                          clipped
                          width="40%"
     >
-      <GmapMap :center="{lat: -7.0243164, lng: 110.4680989}"
+      <GmapMap ref="map"
+               :center="{lat: -7.0243164, lng: 110.4680989}"
                :zoom="16"
                :options="{mapTypeControl: false, streetViewControl: false, zoomControl: false, fullscreenControl: false}"
                map-type-id="terrain"
@@ -196,6 +197,18 @@ export default {
       if (this.selectedAllLabels) { return 'mdi-close-box' }
       if (this.selectedSomeLabels) { return 'mdi-minus-box' }
       return 'mdi-checkbox-blank-outline'
+    }
+  },
+
+  watch: {
+    incidents (markers) {
+      if (markers.length > 2) {
+        const bounds = new google.maps.LatLngBounds() // eslint-disable-line no-undef
+        for (const m of markers) {
+          bounds.extend({ lat: m.locationLat, lng: m.locationLng })
+        }
+        this.$refs.map.fitBounds(bounds)
+      }
     }
   },
 

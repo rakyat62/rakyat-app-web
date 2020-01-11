@@ -45,7 +45,13 @@
         <v-divider />
       </v-list>
       <v-list dense nav>
-        <v-subheader>Organisasi Anda</v-subheader>
+        <v-subheader>
+          Organisasi Anda
+          <!-- <v-spacer />
+          <v-btn text icon>
+            <v-icon v-text="'mdi-plus'" />
+          </v-btn> -->
+        </v-subheader>
         <v-list-item v-for="org in authUser.organizations"
                      :key="org.id"
                      :to="`/org/${org.id}`"

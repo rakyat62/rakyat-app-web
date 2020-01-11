@@ -155,6 +155,7 @@ const queryIncidents = gql`query($status: IncidentStatus!, $labels: [Int!]) {
     locationLat
     locationLng
     status
+    createdAt
     label {
       name
     }

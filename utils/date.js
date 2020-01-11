@@ -8,6 +8,7 @@ dayjs.extend(relativeTime)
 dayjs.extend(customParseFormat)
 
 export const formatDate = (value, format = 'D MMMM YYYY') => {
+  if (!value) { return 'INVALID DATE' }
   if (format === 'relative') {
     return dayjs(value).fromNow()
   }

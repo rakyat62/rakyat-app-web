@@ -184,7 +184,7 @@ export default {
 
   computed: {
     organizationId () {
-      return parseInt(this.$route.params.id)
+      return parseInt(this.$route.params.orgId)
     },
     filterLabelItems () {
       return this.organization.relatedLabels || []

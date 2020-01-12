@@ -53,7 +53,7 @@
         >
           <template v-slot:icon>
             <v-avatar>
-              <img src="http://i.pravatar.cc/64">
+              <img :src="avaUrlUser">
             </v-avatar>
           </template>
           <template v-slot:opposite>
@@ -106,6 +106,8 @@
 export default {
   data () {
     return {
+      avaUrlUser: 'https://avatars0.githubusercontent.com/u/21119252?s=460&v=4',
+      avaUrlOrg: 'https://avatars0.githubusercontent.com/u/54971300?s=200&v=4',
       timelines: [
         { type: 'COMMENT' },
         { type: 'HISTORY' },

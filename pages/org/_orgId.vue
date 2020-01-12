@@ -112,7 +112,10 @@
                 </v-list-item-action-text>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title class="subtitle-1">
+                <v-list-item-title :style="{cursor: 'pointer'}"
+                                   @click="$router.push(`/incidents/${incident.id}`)"
+                                   class="subtitle-1"
+                >
                   {{ `#${incident.id}` }}
                   <span v-text="incident.label.name" class="font-weight-medium" />
                 </v-list-item-title>

@@ -9,7 +9,7 @@
                          width="40%"
     >
       <GmapMap ref="map"
-               :center="{lat: -7.0243164, lng: 110.4680989}"
+               :center="mapCenter"
                :zoom="16"
                :options="{mapTypeControl: false, streetViewControl: false, zoomControl: false, fullscreenControl: false}"
                map-type-id="terrain"
@@ -133,6 +133,7 @@
 
 <script>
 import gql from 'graphql-tag'
+import { getCachedCurrentPosition } from '../../utils/location'
 import { formatDate } from '~/utils/date'
 
 const queryOrganization = gql`query($id: Int!) {
@@ -170,6 +171,8 @@ const queryIncidents = gql`query($status: IncidentStatus!, $labels: [Int!]) {
 
 export default {
   data () {
+    const { lat, lng } = getCachedCurrentPosition()
+
     return {
       avatarUrl: 'https://avatars0.githubusercontent.com/u/54971300?s=200&v=4', // FIXME: hardcode
       organization: {},
@@ -178,7 +181,8 @@ export default {
       filterStatus: 'OPEN',
       filterLabels: [],
       loadingOrganization: false,
-      loadingIncidents: false
+      loadingIncidents: false,
+      mapCenter: { lat, lng }
     }
   },
 

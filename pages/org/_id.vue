@@ -42,6 +42,7 @@
             <v-col>
               <v-select :items="filterStatusItems"
                         v-model="filterStatus"
+                        @input="getDataIncidents"
                         label="Status"
                         dense
                         outlined
@@ -52,6 +53,7 @@
             <v-col>
               <v-select :items="filterLabelItems"
                         v-model="filterLabels"
+                        @input="getDataIncidents"
                         item-text="name"
                         item-value="id"
                         label="Jenis kejadian"
@@ -77,7 +79,7 @@
                   <v-divider class="my-1" />
                 </template>
                 <template v-slot:selection="{ item, index }">
-                  <v-chip v-if="index === 0">
+                  <v-chip v-if="index === 0" small>
                     <span>{{ filterLabels.length === filterLabelItems.length ? 'Semua' : filterLabels.length }} jenis dipilih</span>
                   </v-chip>
                 </template>
@@ -226,8 +228,9 @@ export default {
         if (this.selectedAllLabels) {
           this.filterLabels = []
         } else {
-          this.filterLabels = this.filterLabelItems.slice()
+          this.filterLabels = this.filterLabelItems.map(i => i.id)
         }
+        this.getDataIncidents()
       })
     },
     async getDataOrganization () {
@@ -240,7 +243,7 @@ export default {
           }
         })
         this.organization = data.organization
-        this.filterLabels = data.organization.relatedLabels
+        this.toggleSelectAllLabels()
         this.loadingOrganization = false
       } catch (error) {
         this.loadingOrganization = false
@@ -254,7 +257,7 @@ export default {
           query: queryIncidents,
           variables: {
             status: this.filterStatus,
-            labels: this.filterLabels.map(l => l.id)
+            labels: this.filterLabels
           }
         })
         this.incidents = data.incidents

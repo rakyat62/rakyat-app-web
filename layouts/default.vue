@@ -6,7 +6,12 @@
                clipped-left
                clipped-right
     >
-      <v-toolbar-title v-text="title" @click="$router.push('/')" />
+      <v-toolbar-title @click="$router.push('/')">
+        <img :style="{ height: '36px'}"
+             src="~assets/logo-rakyat62.png"
+             alt="avatar"
+        >
+      </v-toolbar-title>
       <v-spacer />
       <!-- <v-btn @click.stop="$vuetify.theme.dark = !$vuetify.theme.dark" icon>
         <v-icon>mdi-invert-colors</v-icon>

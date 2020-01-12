@@ -2,7 +2,7 @@
   <v-container>
     <v-row>
       <v-col class="display-1">
-        Hedeeeeh <span class="grey--text">{{ `#${incidentId}` }}</span>
+        {{ incident.label ? incident.label.name : '-' }} <span class="grey--text">{{ `#${incident.id}` }}</span>
       </v-col>
       <v-col cols="auto">
         <v-btn :style="{textTransform:'capitalize'}"
@@ -13,21 +13,20 @@
       </v-col>
     </v-row>
     <v-chip :text-color="`${$vuetify.theme.dark ? 'white' : 'black'}`"
-            color="orange"
+            :color="chipStatus.color"
             outlined
             label
             class="white"
             small
     >
-      Sedang diproses
-      <v-icon right
-              color="orange"
+      {{ chipStatus.text }}
+      <v-icon v-text="chipStatus.icon"
+              :color="chipStatus.color"
+              right
               small
-      >
-        mdi-account
-      </v-icon>
+      />
     </v-chip>
-    <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Vero doloribus, molestias sequi totam veniam amet autem quisquam harum tenetur ipsa! Distinctio ipsum nulla vel minus maxime voluptas soluta atque quam?</p>
+    <p v-text="incident.information" />
     <v-row>
       <v-col v-for="i in 6"
              :key="`img_incident_${i}`"
@@ -46,8 +45,8 @@
     </v-row>
 
     <v-timeline align-top dense>
-      <template v-for="(timeline, index) in timelines">
-        <v-timeline-item v-if="timeline.type === 'COMMENT'"
+      <template v-for="(history, index) in incidentHistories">
+        <v-timeline-item v-if="history.type === 'COMMENT'"
                          :key="`tl_${index}`"
                          large
         >
@@ -61,25 +60,23 @@
           </template>
           <v-card class="elevation-2">
             <v-card-title class="py-2">
-              <span class="title">Ahmad sukri</span>
-              <span class="body-2 ml-4">berkomentar 3 jam g lalu</span>
+              <span v-text="history.createdBy.username" class="title" />
+              <span v-text="formatDate(history.createdAt, 'relative')" class="body-2 ml-4" />
             </v-card-title>
-            <v-card-text>Lorem ipsum dolor sit amet, no nam oblique veritus. Commune scaevola imperdiet nec ut, sed euismod convenire principes at. Est et nobis iisque percipit, an vim zril disputando voluptatibus, vix an salutandi sententiae.</v-card-text>
+            <v-card-text v-text="history.content" />
           </v-card>
         </v-timeline-item>
 
-        <v-card v-if="timeline.type === 'HISTORY'"
+        <v-card v-if="history.type === 'FOLLOW_UP'"
                 :key="`tl_${index}`"
                 class="elevation-2 mb-6"
         >
           <v-card-title class="py-2">
-            <span class="title">Update dari Dinas Terkait</span>
-            <span class="body-2 ml-4">3 jam g lalu</span>
+            <span class="title">Update dari {{ history.createdBy.username }}</span>
+            <span v-text="formatDate(history.createdAt, 'relative')" class="body-2 ml-4" />
           </v-card-title>
           <v-card-text>
-            <p class="mt-2">
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dignissimos a ipsam ullam officia omnis corrupti numquam minus repellat, fuga consequatur ea at beatae! Quisquam perferendis et fugit porro magni mollitia.
-            </p>
+            <p v-text="history.content" class="mt-2" />
             <v-row>
               <v-col v-for="i in 6"
                      :key="`img_incident_${i}`"
@@ -99,31 +96,116 @@
         </v-card>
       </template>
     </v-timeline>
+    <v-divider />
+
+    <v-card class="mt-6 pa-4" color="white">
+      <v-textarea outlined
+                  hide-details
+                  label="Tulis Komentar"
+      />
+      <v-btn v-text="'Kirim'"
+             color="primary"
+             class="mt-2"
+      />
+    </v-card>
   </v-container>
 </template>
 
 <script>
+import gql from 'graphql-tag'
+import { formatDate } from '~/utils/date'
+
+const queryIncident = gql`query($id: Int!) {
+  incident(id: $id) {
+    id
+    information
+    status
+    histories {
+      content
+      type
+      createdAt
+      createdBy {
+        username
+      }
+    }
+    label {
+      name
+    }
+    createdBy {
+      username
+    }
+  }
+}`
+
+const incidentChipStatus = {
+  NEW: 'new',
+  ON_PROGRESS: 'on_progress',
+  DONE: 'done'
+}
+
 export default {
   data () {
     return {
       avaUrlUser: 'https://avatars0.githubusercontent.com/u/21119252?s=460&v=4',
       avaUrlOrg: 'https://avatars0.githubusercontent.com/u/54971300?s=200&v=4',
-      timelines: [
-        { type: 'COMMENT' },
-        { type: 'HISTORY' },
-        { type: 'COMMENT' },
-        { type: 'COMMENT' },
-        { type: 'HISTORY' },
-        { type: 'COMMENT' },
-        { type: 'HISTORY' },
-        { type: 'HISTORY' },
-        { type: 'COMMENT' }
-      ]
+      loadingIncident: false,
+      incident: {}
     }
   },
+
   computed: {
     incidentId () {
-      return this.$route.params.id
+      return parseInt(this.$route.params.incidentId)
+    },
+    incidentHistories () {
+      return this.incident.histories || []
+    },
+    incidentHistoriesFollowUp () {
+      return this.incidentHistories.filter(h => h.type === 'FOLLOW_UP')
+    },
+    calculatedStatus () {
+      if (this.incident.status === 'CLOSED') {
+        return incidentChipStatus.DONE
+      } else if (this.incidentHistoriesFollowUp.length > 0) {
+        return incidentChipStatus.ON_PROGRESS
+      } else {
+        return incidentChipStatus.NEW
+      }
+    },
+    chipStatus () {
+      switch (this.calculatedStatus) {
+        case incidentChipStatus.DONE:
+          return { color: 'success', icon: 'mdi-check-circle', text: 'Selesai' }
+        case incidentChipStatus.ON_PROGRESS:
+          return { color: 'orange', icon: 'mdi-clock', text: 'Sedang diproses' }
+        case incidentChipStatus.NEW:
+        default:
+          return { color: 'error', icon: 'mdi-close-circle', text: 'Belum ditindak' }
+      }
+    }
+  },
+
+  created () {
+    this.getDataIncident()
+  },
+
+  methods: {
+    formatDate,
+    async getDataIncident () {
+      try {
+        this.loadingIncident = true
+        const { data } = await this.$apollo.query({
+          query: queryIncident,
+          variables: {
+            id: this.incidentId
+          }
+        })
+        this.incident = data.incident
+        this.loadingIncident = false
+      } catch (error) {
+        this.loadingIncident = false
+        console.error(error)
+      }
     }
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row justify="center">
-      <v-col md="4">
+      <v-col md="6">
         <v-row v-if="loadingIncidentLabels" class="mt-1">
           <v-col v-for="i in 3"
                  :key="`loadinglabel${i}`"

@@ -117,11 +117,14 @@
       <v-divider />
 
       <v-card class="mt-6 pa-4" color="white">
-        <v-textarea outlined
+        <v-textarea v-model="comment"
+                    outlined
                     hide-details
                     label="Tulis Komentar"
         />
         <v-btn v-text="'Kirim'"
+               :loading="loadingSendComment"
+               @click="sendComment"
                color="primary"
                class="mt-2"
         />
@@ -148,11 +151,22 @@ const queryIncident = gql`query($id: Int!) {
       }
     }
     label {
+      id
       name
     }
     createdBy {
       username
     }
+  }
+}`
+
+const mutationSendComment = gql`mutation($content: String, $incidentId: Int!) {
+  addIncidentHistory(input: {
+    content: $content
+    type: COMMENT
+    incidentId: $incidentId
+  }) {
+    content
   }
 }`
 
@@ -168,7 +182,9 @@ export default {
       avaUrlUser: 'https://avatars0.githubusercontent.com/u/21119252?s=460&v=4',
       avaUrlOrg: 'https://avatars0.githubusercontent.com/u/54971300?s=200&v=4',
       loadingIncident: false,
-      incident: {}
+      incident: {},
+      loadingSendComment: false,
+      comment: ''
     }
   },
 
@@ -217,13 +233,32 @@ export default {
           query: queryIncident,
           variables: {
             id: this.incidentId
-          }
+          },
+          fetchPolicy: 'network-only'
         })
         this.incident = data.incident
         this.loadingIncident = false
       } catch (error) {
         this.loadingIncident = false
         console.error(error)
+      }
+    },
+    async sendComment () {
+      try {
+        this.loadingSendComment = true
+        const { data } = await this.$apollo.mutate({
+          mutation: mutationSendComment,
+          variables: {
+            content: this.comment,
+            incidentId: this.incidentId
+          }
+        })
+        this.comment = ''
+        this.getDataIncident()
+        this.loadingSendComment = false
+      } catch (error) {
+        console.error(error)
+        this.loadingSendComment = false
       }
     }
   }

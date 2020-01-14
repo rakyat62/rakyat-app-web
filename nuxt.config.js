@@ -60,6 +60,9 @@ export default {
     graphqlApiUrl: process.env.GRAPHQL_API_URL,
     gmapKey: process.env.GMAP_KEY
   },
+  generate: {
+    fallback: true
+  },
   server: {
     // https: {
     //   key: fs.readFileSync(path.resolve(__dirname, 'server.key')),

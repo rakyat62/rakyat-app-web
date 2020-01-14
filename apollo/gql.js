@@ -51,3 +51,17 @@ export const mutationLogin = gql`mutation($username: String!, $password: String!
     }
   }
 }`
+
+export const queryMe = gql`{
+  me {
+    id
+    username
+    firstName
+    lastName
+    organizations {
+      id
+      name
+      role
+    }
+  }
+}`

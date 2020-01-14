@@ -79,24 +79,13 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { queryMe } from '~/apollo/gql'
+
 export default {
   middleware: 'auth',
   apollo: {
     authUser: {
-      query: gql`{
-        me {
-          id
-          username
-          firstName
-          lastName
-          organizations {
-            id
-            name
-            role
-          }
-        }
-      }`,
+      query: queryMe,
       update: data => data.me
     }
   },

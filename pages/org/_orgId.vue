@@ -147,9 +147,9 @@ const queryOrganization = gql`query($id: Int!) {
     relatedLabels {
       id
       name
-
     }
     members {
+      id
       username
     }
   }
@@ -164,9 +164,11 @@ const queryIncidents = gql`query($status: IncidentStatus!, $labels: [Int!]) {
     status
     createdAt
     label {
+      id
       name
     }
     createdBy {
+      id
       username
     }
   }

@@ -269,7 +269,7 @@ export default {
             labels: this.filterLabels
           }
         })
-        this.incidents = data.incidents
+        this.incidents = data.incidents.sort((first, second) => (first.createdAt > second.createdAt) ? -1 : ((second.createdAt > first.createdAt) ? 1 : 0))
         this.loadingIncidents = false
       } catch (error) {
         this.loadingIncidents = false

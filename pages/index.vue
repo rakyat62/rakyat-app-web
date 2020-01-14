@@ -49,7 +49,10 @@
                    src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
             >
               <v-row class="px-4">
-                <v-col class="title">
+                <v-col :style="{cursor: 'pointer'}"
+                       @click="$router.push(`/incidents/${incident.id}`)"
+                       class="title"
+                >
                   {{ incident.label.name }}
                 </v-col>
                 <v-col cols="auto">

@@ -35,17 +35,55 @@
       </v-row>
       <v-textarea v-model="additionalInformation"
                   outlined
+                  hide-details
                   label="Informasi Tambahan"
       />
-      <v-file-input v-model="inputImage"
-                    accept="image/*;capture=camera"
-                    multiple
-                    prepend-icon="mdi-camera"
-                    label="Tambahkan Gambar"
-      />
+      <v-row class="mt-2">
+        <v-col v-for="(img, i) in imagePreviews"
+               :key="`img${i}`"
+               cols="4"
+               md="2"
+               lg="2"
+               class="pa-1"
+        >
+          <v-img :src="img"
+                 class="grey lighten-4 align-end"
+                 contain
+                 height="80px"
+          />
+        </v-col>
+        <v-col cols="4"
+               md="2"
+               lg="2"
+               class="pa-1 text-center"
+        >
+          <div @click="$refs.inputImage.click()"
+               :style="{
+                 border: '2px dashed #1976d2',
+                 display: 'flex',
+                 alignItems: 'center',
+                 justifyContent: 'center',
+                 height: '80px'
+               }"
+          >
+            <v-icon v-text="'mdi-image-plus'"
+                    x-large
+                    color="primary"
+            />
+            <input ref="inputImage"
+                   @change="onInputImage"
+                   :style="{display: 'none'}"
+                   type="file"
+                   accept="image/*;capture=camera"
+                   label="Tambahkan Gambar"
+            >
+          </div>
+        </v-col>
+      </v-row>
       <v-btn :loading="loadingSubmit"
              @click="submitIncident"
              color="primary"
+             class="mt-8"
              block
       >
         Kirim
@@ -76,7 +114,8 @@ export default {
       gmapZoom: 7,
       additionalInformation: '',
       loadingSubmit: false,
-      inputImage: null
+      imagePreviews: [],
+      inputImages: []
     }
   },
 
@@ -124,6 +163,19 @@ export default {
       } catch (error) {
         console.error(error)
         this.loadingLocation = false
+      }
+    },
+    onInputImage (e) {
+      const files = e.target.files
+      const file = files[0]
+
+      if (file) {
+        const fileReader = new FileReader()
+        fileReader.readAsDataURL(file)
+        fileReader.addEventListener('load', () => {
+          this.imagePreviews.push(fileReader.result)
+        })
+        this.inputImages.push(file)
       }
     }
   }

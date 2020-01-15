@@ -24,9 +24,10 @@
         </v-col>
         <v-col cols="auto">
           <v-btn :style="{textTransform:'capitalize'}"
+                 v-if="userOrganizationsRelatedWithIncident.length > 0"
                  color="primary"
           >
-            Update Riwayat
+            Update Tindak Lanjut
           </v-btn>
         </v-col>
       </v-row>
@@ -62,6 +63,7 @@
         </v-col>
       </v-row>
 
+      <v-divider class="mt-5" />
       <v-timeline align-top dense>
         <template v-for="(history, index) in incidentHistories">
           <v-timeline-item v-if="history.type === 'COMMENT'"
@@ -70,7 +72,7 @@
           >
             <template v-slot:icon>
               <v-avatar>
-                <img :src="avaUrlUser">
+                <img :src="history.createdBy.avatarUrl">
               </v-avatar>
             </template>
             <template v-slot:opposite>
@@ -81,7 +83,9 @@
                 <span v-text="history.createdBy.username" class="title" />
                 <span v-text="formatDate(history.createdAt, 'relative')" class="body-2 ml-4" />
               </v-card-title>
-              <v-card-text v-text="history.content" />
+              <v-card-text>
+                <p v-text="history.content" />
+              </v-card-text>
             </v-card>
           </v-timeline-item>
 
@@ -125,6 +129,7 @@
         <v-btn v-text="'Kirim'"
                :loading="loadingSendComment"
                @click="sendComment"
+               :disabled="comment.length < 1"
                color="primary"
                class="mt-2"
         />
@@ -136,6 +141,7 @@
 <script>
 import gql from 'graphql-tag'
 import { formatDate } from '~/utils/date'
+import { queryMe } from '~/apollo/gql'
 
 const queryIncident = gql`query($id: Int!) {
   incident(id: $id) {
@@ -143,19 +149,29 @@ const queryIncident = gql`query($id: Int!) {
     information
     status
     histories {
+      id
       content
       type
       createdAt
       createdBy {
+        id
         username
+        avatarUrl
       }
     }
     label {
       id
       name
+      relatedOrganizations {
+        id
+        name
+        logoUrl
+      }
     }
     createdBy {
+      id
       username
+      avatarUrl
     }
   }
 }`
@@ -166,6 +182,7 @@ const mutationSendComment = gql`mutation($content: String, $incidentId: Int!) {
     type: COMMENT
     incidentId: $incidentId
   }) {
+    id
     content
   }
 }`
@@ -177,10 +194,14 @@ const incidentChipStatus = {
 }
 
 export default {
+  apollo: {
+    authUser: {
+      query: queryMe,
+      update: data => data.me
+    }
+  },
   data () {
     return {
-      avaUrlUser: 'https://avatars0.githubusercontent.com/u/21119252?s=460&v=4',
-      avaUrlOrg: 'https://avatars0.githubusercontent.com/u/54971300?s=200&v=4',
       loadingIncident: false,
       incident: {},
       loadingSendComment: false,
@@ -217,6 +238,12 @@ export default {
         default:
           return { color: 'error', icon: 'mdi-close-circle', text: 'Belum ditindak' }
       }
+    },
+    relatedOrganizations () {
+      return this.incident.label.relatedOrganizations || []
+    },
+    userOrganizationsRelatedWithIncident () {
+      return this.authUser.organizations.filter(iOrg => this.relatedOrganizations.some(uOrg => uOrg.id === iOrg.id))
     }
   },
 
@@ -246,7 +273,7 @@ export default {
     async sendComment () {
       try {
         this.loadingSendComment = true
-        const { data } = await this.$apollo.mutate({
+        await this.$apollo.mutate({
           mutation: mutationSendComment,
           variables: {
             content: this.comment,

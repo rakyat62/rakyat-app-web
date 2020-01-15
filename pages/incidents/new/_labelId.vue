@@ -43,9 +43,13 @@
                     prepend-icon="mdi-camera"
                     label="Tambahkan Gambar"
       />
+      <v-btn @click="onClickOpenMedia">
+        buka media
+      </v-btn>
       <v-btn :loading="loadingSubmit"
              @click="submitIncident"
              color="primary"
+             class="mt-2"
              block
       >
         Kirim
@@ -125,6 +129,10 @@ export default {
         console.error(error)
         this.loadingLocation = false
       }
+    },
+    async onClickOpenMedia () {
+      const data = await navigator.getUserMedia({ video: true })
+      console.log(data)
     }
   }
 }

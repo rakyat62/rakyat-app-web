@@ -46,9 +46,9 @@
                 small
         />
       </v-chip>
-      <p v-text="incident.information" />
+      <p v-text="incident.information" class="mt-2" />
       <v-row>
-        <v-col v-for="i in 6"
+        <v-col v-for="(img, i) in incident.images"
                :key="`img_incident_${i}`"
                cols="4"
                md="2"
@@ -56,10 +56,10 @@
                class="pa-1"
         >
           <v-img :class="`grey ${ $vuetify.theme.dark ? 'darken' : 'lighten'}-3`"
+                 :src="img"
                  class="align-end"
                  contain
                  height="100px"
-                 src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
           />
         </v-col>
       </v-row>
@@ -98,17 +98,17 @@
             <v-card-text>
               <p v-text="history.content" class="body-1 mt-2" />
               <v-row>
-                <v-col v-for="i in 6"
-                       :key="`img_incident_${i}`"
+                <v-col v-for="(img, i) in history.images"
+                       :key="`img_${history.id}_${i}`"
                        cols="4"
                        md="2"
                        lg="2"
                        class="pa-1"
                 >
-                  <v-img class="grey lighten-4 align-end"
+                  <v-img :src="img"
+                         class="grey lighten-4 align-end"
                          contain
                          height="120px"
-                         src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
                   />
                 </v-col>
               </v-row>
@@ -134,7 +134,7 @@
         />
       </v-card>
 
-      <v-dialog v-model="dialogFollowUp" max-width="500">
+      <v-dialog v-model="dialogFollowUp" max-width="80%">
         <v-card>
           <v-card-title class="title grey lighten-2">
             Update Tindak Lanjut
@@ -147,6 +147,48 @@
                         outlined
                         hide-details
             />
+            <v-row class="mt-2">
+              <v-col v-for="(img, i) in imagePreviews"
+                     :key="`img${i}`"
+                     cols="4"
+                     md="2"
+                     lg="2"
+                     class="pa-1"
+              >
+                <v-img :src="img"
+                       class="grey lighten-4 align-end"
+                       contain
+                       height="80px"
+                />
+              </v-col>
+              <v-col cols="4"
+                     md="2"
+                     lg="2"
+                     class="pa-1 text-center"
+              >
+                <div @click="$refs.inputImage.click()"
+                     :style="{
+                       border: '2px dashed #1976d2',
+                       display: 'flex',
+                       alignItems: 'center',
+                       justifyContent: 'center',
+                       height: '80px'
+                     }"
+                >
+                  <v-icon v-text="'mdi-image-plus'"
+                          x-large
+                          color="primary"
+                  />
+                  <input ref="inputImage"
+                         @change="onInputImage"
+                         :style="{display: 'none'}"
+                         type="file"
+                         accept="image/*;capture=camera"
+                         label="Tambahkan Gambar"
+                  >
+                </div>
+              </v-col>
+            </v-row>
           </v-card-text>
 
           <v-divider />
@@ -169,6 +211,7 @@
 
 <script>
 import gql from 'graphql-tag'
+import { uploadFiels } from '../../utils/cloudinary'
 import { formatDate } from '~/utils/date'
 import { queryMe } from '~/apollo/gql'
 
@@ -177,10 +220,12 @@ const queryIncident = gql`query($id: Int!) {
     id
     information
     status
+    images
     histories {
       id
       content
       type
+      images
       createdAt
       createdBy {
         id
@@ -205,11 +250,12 @@ const queryIncident = gql`query($id: Int!) {
   }
 }`
 
-const mutationSendComment = gql`mutation($content: String, $incidentId: Int!, $type: IncidentHistoryType!) {
+const mutationSendComment = gql`mutation($content: String, $incidentId: Int!, $type: IncidentHistoryType!, $images: [String!]) {
   addIncidentHistory(input: {
     content: $content
     type: $type
     incidentId: $incidentId
+    images: $images
   }) {
     id
     content
@@ -236,7 +282,9 @@ export default {
       loadingUpdateHistory: false,
       comment: '',
       dialogFollowUp: false,
-      inputContentFollowUp: ''
+      inputContentFollowUp: '',
+      imagePreviews: [],
+      inputImages: []
     }
   },
 
@@ -271,10 +319,14 @@ export default {
       }
     },
     relatedOrganizations () {
-      return this.incident.label.relatedOrganizations || []
+      const label = this.incident.label || {}
+      return label.relatedOrganizations || []
+    },
+    userOrganizations () {
+      return this.authUser.organizations || []
     },
     userOrganizationsRelatedWithIncident () {
-      return this.authUser.organizations.filter(iOrg => this.relatedOrganizations.some(uOrg => uOrg.id === iOrg.id))
+      return this.userOrganizations.filter(iOrg => this.relatedOrganizations.some(uOrg => uOrg.id === iOrg.id))
     }
   },
 
@@ -302,17 +354,17 @@ export default {
       }
     },
     async sendUpdateHistory (type) {
-      const variables = {
-        content: type === 'COMMENT' ? this.comment : this.inputContentFollowUp,
-        incidentId: this.incidentId,
-        type
-      }
-
       try {
         this.loadingUpdateHistory = true
+        const images = await uploadFiels(this.inputImages)
         await this.$apollo.mutate({
           mutation: mutationSendComment,
-          variables
+          variables: {
+            content: type === 'COMMENT' ? this.comment : this.inputContentFollowUp,
+            incidentId: this.incidentId,
+            type,
+            images
+          }
         })
         this.comment = ''
         this.inputContentFollowUp = ''
@@ -322,6 +374,19 @@ export default {
       } catch (error) {
         console.error(error)
         this.loadingUpdateHistory = false
+      }
+    },
+    onInputImage (e) {
+      const files = e.target.files
+      const file = files[0]
+
+      if (file) {
+        const fileReader = new FileReader()
+        fileReader.readAsDataURL(file)
+        fileReader.addEventListener('load', () => {
+          this.imagePreviews.push(fileReader.result)
+        })
+        this.inputImages.push(file)
       }
     }
   }

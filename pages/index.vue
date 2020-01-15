@@ -18,7 +18,7 @@
                  class="text-center my-0 py-0"
           >
             <v-btn :style="{ borderWidth: '2px', borderRadius: '25%' }"
-                   :to="`/new/incident/${label.id}`"
+                   :to="`/incidents/new/${label.id}`"
                    icon
                    large
                    fab

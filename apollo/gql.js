@@ -58,9 +58,11 @@ export const queryMe = gql`{
     username
     firstName
     lastName
+    avatarUrl
     organizations {
       id
       name
+      logoUrl
       role
     }
   }

@@ -20,7 +20,7 @@
                 style="cursor: pointer"
                 size="40px"
       >
-        <img :src="avatarUrl" alt="avatar">
+        <img :src="authUser.avatarUrl" alt="avatar">
       </v-avatar>
     </v-app-bar>
 
@@ -38,7 +38,7 @@
       <v-list dense class="py-0">
         <v-list-item two-line>
           <v-list-item-avatar tile>
-            <img :src="avatarUrl">
+            <img :src="authUser.avatarUrl">
           </v-list-item-avatar>
 
           <v-list-item-content>
@@ -62,9 +62,9 @@
                      :to="`/org/${org.id}`"
                      link
         >
-          <v-list-item-icon>
-            <v-icon>mdi-home</v-icon>
-          </v-list-item-icon>
+          <v-list-item-avatar tile>
+            <img :src="org.logoUrl">
+          </v-list-item-avatar>
 
           <v-list-item-content>
             <v-list-item-title v-text="org.name" />
@@ -93,8 +93,7 @@ export default {
     return {
       title: 'Rakyat62',
       drawer: false,
-      authUser: {},
-      avatarUrl: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.svhealthcare.org%2F_%2Fmedia%2Fimages%2Fmodules%2Fphysician-directory%2Fphysicians%2Flbtavatar0473.jpg%3Fh%3D192%26la%3Den%26w%3D192&f=1&nofb=1'
+      authUser: {}
     }
   },
 

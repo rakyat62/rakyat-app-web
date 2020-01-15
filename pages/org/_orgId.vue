@@ -32,7 +32,7 @@
                  flat
       >
         <v-avatar tile>
-          <img :src="avatarUrl">
+          <img :src="organization.logoUrl">
         </v-avatar>
         <div v-text="organization.name" class="title font-weight-regular ml-5" />
 
@@ -144,6 +144,7 @@ const queryOrganization = gql`query($id: Int!) {
     id
     name
     description
+    logoUrl
     relatedLabels {
       id
       name
@@ -179,7 +180,6 @@ export default {
     const { lat, lng } = getCachedCurrentPosition()
 
     return {
-      avatarUrl: 'https://avatars0.githubusercontent.com/u/54971300?s=200&v=4', // FIXME: hardcode
       organization: {},
       incidents: [],
       filterStatusItems: ['OPEN', 'CLOSED'],

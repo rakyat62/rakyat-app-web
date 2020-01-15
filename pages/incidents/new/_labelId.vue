@@ -37,6 +37,12 @@
                   outlined
                   label="Informasi Tambahan"
       />
+      <v-file-input v-model="inputImage"
+                    accept="image/png,image/jpeg"
+                    multiple
+                    prepend-icon="mdi-camera"
+                    label="Tambahkan Gambar"
+      />
       <v-btn :loading="loadingSubmit"
              @click="submitIncident"
              color="primary"
@@ -69,7 +75,8 @@ export default {
       loadingLocation: false,
       gmapZoom: 7,
       additionalInformation: '',
-      loadingSubmit: false
+      loadingSubmit: false,
+      inputImage: null
     }
   },
 

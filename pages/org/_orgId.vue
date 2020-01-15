@@ -114,7 +114,7 @@
               <v-list-item-content>
                 <v-list-item-title :style="{cursor: 'pointer'}"
                                    @click="$router.push(`/incidents/${incident.id}`)"
-                                   class="subtitle-1"
+                                   class="subtitle-1 mb-0"
                 >
                   {{ `#${incident.id}` }}
                   <span v-text="incident.label.name" class="font-weight-medium" />
@@ -124,7 +124,7 @@
                   oleh
                   <span v-text="incident.createdBy.username" class="font-weight-medium" />
                 </v-list-item-subtitle>
-                <v-list-item-subtitle v-text="incident.information" />
+                <v-list-item-subtitle v-text="incident.information" class="body-1" />
               </v-list-item-content>
             </v-list-item>
           </v-list>

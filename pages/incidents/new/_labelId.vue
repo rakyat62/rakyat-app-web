@@ -93,8 +93,12 @@
 </template>
 
 <script>
-import { mutationCreateIncident, queryIncidentLabels } from '../../../apollo/gql'
+import {
+  mutationCreateIncident,
+  queryIncidentLabels
+} from '../../../apollo/gql'
 import { loadCurrentPosition, getCachedCurrentPosition } from '~/utils/location'
+import { uploadFiels } from '~/utils/cloudinary'
 
 export default {
   apollo: {
@@ -137,13 +141,15 @@ export default {
     async submitIncident () {
       try {
         this.loadingSubmit = true
+        const images = await uploadFiels(this.inputImages)
         await this.$apollo.mutate({
           mutation: mutationCreateIncident,
           variables: {
             information: this.additionalInformation,
             lat: this.userLocation.lat,
             lng: this.userLocation.lng,
-            label: this.incidentLabelId
+            label: this.incidentLabelId,
+            images
           }
         })
         this.loadingSubmit = false

@@ -22,12 +22,13 @@ export const queryIncidentLabels = gql`{
   }
 }`
 
-export const mutationCreateIncident = gql`mutation($information: String!, $lat: Float!, $lng: Float!, $label: Int!) {
+export const mutationCreateIncident = gql`mutation($information: String!, $lat: Float!, $lng: Float!, $label: Int!, $images: [String!]) {
   createIncident(input: {
     information: $information
     locationLat: $lat
     locationLng: $lng
     label: $label
+    images: $images
   }) {
     id
     information

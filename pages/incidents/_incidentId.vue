@@ -25,6 +25,7 @@
         <v-col cols="auto">
           <v-btn :style="{textTransform:'capitalize'}"
                  v-if="userOrganizationsRelatedWithIncident.length > 0"
+                 @click.stop="dialogFollowUp = true"
                  color="primary"
           >
             Update Tindak Lanjut
@@ -75,16 +76,13 @@
                 <img :src="history.createdBy.avatarUrl">
               </v-avatar>
             </template>
-            <template v-slot:opposite>
-              <span>Tus eu perfecto</span>
-            </template>
             <v-card class="elevation-2">
               <v-card-title class="py-2">
-                <span v-text="history.createdBy.username" class="title" />
+                <span v-text="history.createdBy.username" class="body-1" />
                 <span v-text="formatDate(history.createdAt, 'relative')" class="body-2 ml-4" />
               </v-card-title>
               <v-card-text>
-                <p v-text="history.content" />
+                <p v-text="history.content" class="body-1" />
               </v-card-text>
             </v-card>
           </v-timeline-item>
@@ -94,11 +92,11 @@
                   class="elevation-2 mb-6"
           >
             <v-card-title class="py-2">
-              <span class="title">Update dari {{ history.createdBy.username }}</span>
+              <span class="body-1">Update dari {{ history.createdBy.username }}</span>
               <span v-text="formatDate(history.createdAt, 'relative')" class="body-2 ml-4" />
             </v-card-title>
             <v-card-text>
-              <p v-text="history.content" class="mt-2" />
+              <p v-text="history.content" class="body-1 mt-2" />
               <v-row>
                 <v-col v-for="i in 6"
                        :key="`img_incident_${i}`"
@@ -122,18 +120,49 @@
 
       <v-card class="mt-6 pa-4" color="white">
         <v-textarea v-model="comment"
+                    auto-grow
                     outlined
                     hide-details
                     label="Tulis Komentar"
         />
         <v-btn v-text="'Kirim'"
-               :loading="loadingSendComment"
-               @click="sendComment"
+               :loading="loadingUpdateHistory"
+               @click="sendUpdateHistory('COMMENT')"
                :disabled="comment.length < 1"
                color="primary"
                class="mt-2"
         />
       </v-card>
+
+      <v-dialog v-model="dialogFollowUp" max-width="500">
+        <v-card>
+          <v-card-title class="title grey lighten-2">
+            Update Tindak Lanjut
+          </v-card-title>
+
+          <v-card-text class="mt-5">
+            <v-textarea v-model="inputContentFollowUp"
+                        :label="`Update Terkini ${incident.label.name} #${incident.id}`"
+                        auto-grow
+                        outlined
+                        hide-details
+            />
+          </v-card-text>
+
+          <v-divider />
+
+          <v-card-actions>
+            <v-spacer />
+            <v-btn @click="sendUpdateHistory('FOLLOW_UP')"
+                   :disabled="inputContentFollowUp.length < 1"
+                   :loading="loadingUpdateHistory"
+                   color="primary"
+            >
+              Kirim
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </template>
   </v-container>
 </template>
@@ -176,10 +205,10 @@ const queryIncident = gql`query($id: Int!) {
   }
 }`
 
-const mutationSendComment = gql`mutation($content: String, $incidentId: Int!) {
+const mutationSendComment = gql`mutation($content: String, $incidentId: Int!, $type: IncidentHistoryType!) {
   addIncidentHistory(input: {
     content: $content
-    type: COMMENT
+    type: $type
     incidentId: $incidentId
   }) {
     id
@@ -204,8 +233,10 @@ export default {
     return {
       loadingIncident: false,
       incident: {},
-      loadingSendComment: false,
-      comment: ''
+      loadingUpdateHistory: false,
+      comment: '',
+      dialogFollowUp: false,
+      inputContentFollowUp: ''
     }
   },
 
@@ -270,22 +301,27 @@ export default {
         console.error(error)
       }
     },
-    async sendComment () {
+    async sendUpdateHistory (type) {
+      const variables = {
+        content: type === 'COMMENT' ? this.comment : this.inputContentFollowUp,
+        incidentId: this.incidentId,
+        type
+      }
+
       try {
-        this.loadingSendComment = true
+        this.loadingUpdateHistory = true
         await this.$apollo.mutate({
           mutation: mutationSendComment,
-          variables: {
-            content: this.comment,
-            incidentId: this.incidentId
-          }
+          variables
         })
         this.comment = ''
+        this.inputContentFollowUp = ''
         this.getDataIncident()
-        this.loadingSendComment = false
+        this.dialogFollowUp = false
+        this.loadingUpdateHistory = false
       } catch (error) {
         console.error(error)
-        this.loadingSendComment = false
+        this.loadingUpdateHistory = false
       }
     }
   }

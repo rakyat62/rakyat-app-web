@@ -15,11 +15,14 @@
   "dependencies": {
     "@nuxtjs/apollo": "^4.0.0-rc19",
     "axios": "^0.19.1",
+    "chart.js": "^2.9.3",
+    "chartjs-plugin-colorschemes": "^0.4.0",
     "dayjs": "^1.8.18",
     "dotenv": "^8.2.0",
     "graphql": "^14.5.8",
     "graphql-tag": "^2.10.1",
     "nuxt": "^2.0.0",
+    "vue-chartjs": "^3.5.0",
     "vue2-google-maps": "^0.10.7"
   },
   "devDependencies": {

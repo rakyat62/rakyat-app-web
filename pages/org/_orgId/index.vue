@@ -35,6 +35,9 @@
           <img :src="organization.logoUrl">
         </v-avatar>
         <div v-text="organization.name" class="title font-weight-regular ml-5" />
+        <v-btn to="stats" append>
+          stats
+        </v-btn>
 
         <template #extension>
           <v-row>

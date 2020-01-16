@@ -136,7 +136,7 @@
 
 <script>
 import gql from 'graphql-tag'
-import { getCachedCurrentPosition } from '../../utils/location'
+import { getCachedCurrentPosition } from '~/utils/location'
 import { formatDate } from '~/utils/date'
 
 const queryOrganization = gql`query($id: Int!) {

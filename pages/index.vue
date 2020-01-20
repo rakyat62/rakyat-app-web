@@ -94,17 +94,19 @@ import { formatDate } from '~/utils/date'
 
 const queryIncidents = gql`{
   incidents {
-    id
-    status
-    label {
+    nodes {
       id
-      name
+      status
+      label {
+        id
+        name
+      }
+      createdBy {
+        id
+        username
+      }
+      createdAt
     }
-    createdBy {
-      id
-      username
-    }
-    createdAt
   }
   incidentLabels {
     id
@@ -138,7 +140,7 @@ export default {
           fetchPolicy: 'network-only'
         })
         this.incidentLabels = data.incidentLabels
-        this.incidents = data.incidents.sort((first, second) => (first.createdAt > second.createdAt) ? -1 : ((second.createdAt > first.createdAt) ? 1 : 0))
+        this.incidents = data.incidents.nodes.sort((first, second) => (first.createdAt > second.createdAt) ? -1 : ((second.createdAt > first.createdAt) ? 1 : 0))
         this.loadingIncidentLabels = false
         this.loadingIncidents = false
       } catch (error) {

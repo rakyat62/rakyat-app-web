@@ -1,10 +1,14 @@
-import { Line, mixins } from 'vue-chartjs'
+import { Bar, mixins } from 'vue-chartjs'
 import 'chartjs-plugin-colorschemes/src/plugins/plugin.colorschemes'
 import { Tableau10 } from 'chartjs-plugin-colorschemes/src/colorschemes/colorschemes.tableau'
 
 const options = {
   responsive: true,
   maintainAspectRatio: false,
+  tooltips: {
+    mode: 'index',
+    intersect: false
+  },
   plugins: {
     colorschemes: {
       scheme: Tableau10
@@ -13,7 +17,7 @@ const options = {
 }
 
 export default {
-  extends: Line,
+  extends: Bar,
   mixins: [mixins.reactiveProp],
   data () {
     return {

@@ -35,13 +35,18 @@
           <img :src="organization.logoUrl">
         </v-avatar>
         <div v-text="organization.name" class="title font-weight-regular ml-5" />
-        <v-btn to="stats" append>
-          stats
-        </v-btn>
 
         <template #extension>
           <v-row>
-            <v-col />
+            <v-col>
+              <v-btn to="stats"
+                     append
+                     color="primary"
+              >
+                <v-icon v-text="'mdi-chart-line'" left />
+                stats
+              </v-btn>
+            </v-col>
             <v-col>
               <v-select :items="filterStatusItems"
                         v-model="filterStatus"
@@ -161,19 +166,21 @@ const queryOrganization = gql`query($id: Int!) {
 
 const queryIncidents = gql`query($status: IncidentStatus!, $labels: [Int!]) {
   incidents(status: $status, labels: $labels) {
-    id
-    information
-    locationLat
-    locationLng
-    status
-    createdAt
-    label {
+    nodes {
       id
-      name
-    }
-    createdBy {
-      id
-      username
+      information
+      locationLat
+      locationLng
+      status
+      createdAt
+      label {
+        id
+        name
+      }
+      createdBy {
+        id
+        username
+      }
     }
   }
 }`
@@ -272,7 +279,7 @@ export default {
             labels: this.filterLabels
           }
         })
-        this.incidents = data.incidents.sort((first, second) => (first.createdAt > second.createdAt) ? -1 : ((second.createdAt > first.createdAt) ? 1 : 0))
+        this.incidents = data.incidents.nodes.sort((first, second) => (first.createdAt > second.createdAt) ? -1 : ((second.createdAt > first.createdAt) ? 1 : 0))
         this.loadingIncidents = false
       } catch (error) {
         this.loadingIncidents = false

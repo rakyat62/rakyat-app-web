@@ -1,19 +1,5 @@
 import gql from 'graphql-tag'
 
-export const queryIncidentsMinimumFields = gql`{
-  incidents {
-    id
-    status
-    label {
-      name
-    }
-    createdBy {
-      username
-    }
-    createdAt
-  }
-}`
-
 export const queryIncidentLabels = gql`{
   incidentLabels {
     id

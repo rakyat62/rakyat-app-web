@@ -16,11 +16,20 @@
     </v-row>
     <v-row v-else>
       <v-col md="12">
-        <v-card>
+        <v-card :loading="loadingLineChart">
           <v-card-text>
-            <div class="text-center title mb-2">
-              Jumlah Kejadian Tiap Hari
-            </div>
+            <v-row justify="center"
+                   align="center"
+                   class="text-center title mb-2"
+            >
+              <v-col v-text="'Kejadian'" cols="auto" />
+              <v-col :style="{width: '80px'}" cols="auto">
+                <v-select v-model="lastNDays"
+                          :items="[7,30,60]"
+                />
+              </v-col>
+              <v-col v-text="'Hari Terakhir'" cols="auto" />
+            </v-row>
             <chart-bar :chart-data="incidentsPerMonthCollection" />
           </v-card-text>
         </v-card>
@@ -29,7 +38,7 @@
         <v-card>
           <v-card-text>
             <div class="text-center title mb-2">
-              Jumlah Tiap Jenis Kejadian
+              Banyak Tiap Jenis Kejadian
             </div>
             <chart-pie :chart-data="totalIncidentsCollection" />
           </v-card-text>
@@ -41,16 +50,18 @@
 
 <script>
 import gql from 'graphql-tag'
+import dayjs from 'dayjs'
 import { formatDate } from '../../../utils/date'
 import ChartBar from '~/components/ChartBar'
 import ChartPie from '~/components/ChartPie'
 
-const queryStats = gql`query ($id: Int!) {
+const queryStats = gql`query ($id: Int!, $dateStart: DateTime) {
   organization(id: $id) {
     id
     name
     logoUrl
   }
+
   pieChart: organization(id: $id){
     id
     relatedLabels {
@@ -67,7 +78,23 @@ const queryStats = gql`query ($id: Int!) {
     relatedLabels {
       id
       name
-      incidents {
+      incidents (dateStart: $dateStart) {
+        stats(groupBy: "DATE(createdAt)") {
+          count
+          fieldGroup
+        }
+      }
+    }
+  }
+}`
+
+const queryUpdateLineChart = gql`query ($id: Int!, $dateStart: DateTime) {
+  organization(id: $id) {
+    id
+    relatedLabels {
+      id
+      name
+      incidents (dateStart: $dateStart) {
         stats(groupBy: "DATE(createdAt)") {
           count
           fieldGroup
@@ -88,13 +115,24 @@ export default {
       organization: {},
       incidentsPerMonthCollection: { labels: [], datasets: [] },
       totalIncidentsCollection: { labels: [], datasets: [{ data: [] }] },
-      loadingData: false
+      loadingData: false,
+      loadingLineChart: false,
+      lastNDays: 30
     }
   },
 
   computed: {
     organizationId () {
       return parseInt(this.$route.params.orgId)
+    },
+    dateStartLineChart () {
+      return dayjs().add(-this.lastNDays - 1, 'days').format('YYYY-MM-DD')
+    }
+  },
+
+  watch: {
+    dateStartLineChart () {
+      this.fetchDataLineChart()
     }
   },
 
@@ -109,7 +147,9 @@ export default {
         const { data } = await this.$apollo.query({
           query: queryStats,
           variables: {
-            id: this.organizationId
+            id: this.organizationId,
+            dateStart: this.dateStartLineChart
+
           },
           fetchPolicy: 'network-only'
         })
@@ -135,6 +175,38 @@ export default {
       } catch (error) {
         console.error(error)
         this.loadingData = false
+      }
+    },
+    async fetchDataLineChart () {
+      try {
+        this.loadingLineChart = true
+        const { data } = await this.$apollo.query({
+          query: queryUpdateLineChart,
+          variables: {
+            id: this.organizationId,
+            dateStart: this.dateStartLineChart
+          },
+          fetchPolicy: 'network-only'
+        })
+
+        const labels = data.organization.relatedLabels.reduce((acc, val) => ([...acc, ...val.incidents.stats.map(s => s.fieldGroup)]), [])
+        const normalizedLabels = labels.reduce((acc, val) => acc.includes(val) ? acc : [...acc, val], []).sort()
+        this.incidentsPerMonthCollection = {
+          labels: normalizedLabels.map(l => formatDate(l, 'DD MMM YYYY')),
+          datasets: data.organization.relatedLabels.map(label => ({
+            label: label.name,
+            fill: false,
+            data: normalizedLabels.map((l) => {
+              const findStat = label.incidents.stats.find(s => s.fieldGroup === l)
+              return findStat ? findStat.count : 0
+            })
+          }))
+        }
+
+        this.loadingLineChart = false
+      } catch (error) {
+        console.error(error)
+        this.loadingLineChart = false
       }
     }
   }

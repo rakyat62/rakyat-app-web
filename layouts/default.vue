@@ -35,6 +35,16 @@
                          right
                          dark
     >
+      <template v-slot:append>
+        <div class="pa-2">
+          <v-btn @click="onClickLogout"
+                 outlined
+                 block
+          >
+            Logout
+          </v-btn>
+        </div>
+      </template>
       <v-list dense class="py-0">
         <v-list-item two-line>
           <v-list-item-avatar tile>
@@ -90,6 +100,7 @@
 
 <script>
 import { queryMe } from '~/apollo/gql'
+import storageKey from '~/constants/storageKeys'
 
 export default {
   middleware: 'auth',
@@ -110,6 +121,13 @@ export default {
   computed: {
     userFullName () {
       return this.authUser.firstName ? `${this.authUser.firstName} ${this.authUser.lastName}` : '(no name)'
+    }
+  },
+
+  methods: {
+    onClickLogout () {
+      localStorage.removeItem(storageKey.AUTH_TOKEN)
+      this.$router.replace('/auth')
     }
   }
 }

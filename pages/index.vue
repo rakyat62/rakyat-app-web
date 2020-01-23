@@ -44,40 +44,41 @@
             <div class="body-1 px-4 py-2">
               {{ incident.createdBy.username }}
             </div>
-            <v-img class="white--text align-end"
-                   height="200px"
-                   src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
+            <v-carousel :show-arrows="false"
+                        height="200px"
+                        hide-delimiters
             >
-              <v-row class="px-4">
-                <v-col :style="{cursor: 'pointer'}"
-                       @click="$router.push(`/incidents/${incident.id}`)"
-                       class="title"
+              <v-carousel-item
+                v-for="(img,i) in incident.images"
+                :key="i"
+                :src="img"
+              />
+            </v-carousel>
+            <v-row class="px-4">
+              <v-col :style="{cursor: 'pointer'}"
+                     @click="$router.push(`/incidents/${incident.id}`)"
+                     class="title"
+              >
+                {{ incident.label.name }}
+              </v-col>
+              <v-col cols="auto">
+                <!-- <v-chip color="white"
+                        text-color="error"
+                        small
                 >
-                  {{ incident.label.name }}
-                </v-col>
-                <v-col cols="auto">
-                  <v-chip color="white"
-                          text-color="error"
+                  belum disakljsd
+                  <v-icon right
+                          color="error"
                           small
                   >
-                    belum disakljsd
-                    <v-icon right
-                            color="error"
-                            small
-                    >
-                      mdi-account
-                    </v-icon>
-                  </v-chip>
-                </v-col>
-              </v-row>
-            </v-img>
+                    mdi-account
+                  </v-icon>
+                </v-chip> -->
+              </v-col>
+            </v-row>
 
-            <v-card-text class="text--primary">
+            <v-card-text class="text--primary pt-0">
               <div class="caption">
-                <!-- <v-icon>
-                  mdi-arrow-up-bold
-                </v-icon>
-                16 -->
                 {{ formatDate(incident.createdAt, 'relative') }}
               </div>
             </v-card-text>
@@ -94,9 +95,13 @@ import { formatDate } from '~/utils/date'
 
 const queryIncidents = gql`{
   incidents {
-    nodes {
+    nodes (
+      limit: 20
+      orderBy: { field: createdAt, direction: DESC }
+    ) {
       id
       status
+      images
       label {
         id
         name

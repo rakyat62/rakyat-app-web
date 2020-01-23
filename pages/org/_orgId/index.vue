@@ -114,8 +114,8 @@
             <v-list-item>
               <v-list-item-action>
                 <v-list-item-action-text :style="{width: '100%'}">
-                  <v-icon color="error">
-                    mdi-close-circle
+                  <v-icon :color="incident.status === 'OPEN' ? 'error': 'success'">
+                    {{ incident.status === 'OPEN' ? 'mdi-close-circle' : 'mdi-check-circle' }}
                   </v-icon>
                 </v-list-item-action-text>
               </v-list-item-action>

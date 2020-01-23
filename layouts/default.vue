@@ -65,10 +65,20 @@
           <v-list-item-avatar tile>
             <img :src="org.logoUrl">
           </v-list-item-avatar>
+          <v-badge color="success"
+                   left
+                   bordered
+          >
+            <template v-slot:badge>
+              <span class="caption">{{ org.role }}</span>
+            </template>
 
-          <v-list-item-content>
-            <v-list-item-title v-text="org.name" />
-          </v-list-item-content>
+            <v-list-item-content>
+              <v-list-item-title>
+                {{ org.name }}
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-badge>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>

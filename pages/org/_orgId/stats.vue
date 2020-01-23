@@ -9,7 +9,7 @@
     <v-row v-if="loadingData">
       <v-col v-for="i in 2"
              :key="`loading${i}`"
-             md="6"
+             md="12"
       >
         <v-skeleton-loader type="card" />
       </v-col>

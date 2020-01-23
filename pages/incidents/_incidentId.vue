@@ -23,13 +23,18 @@
           {{ incident.label ? incident.label.name : '-' }} <span class="grey--text">{{ `#${incident.id}` }}</span>
         </v-col>
         <v-col cols="auto">
-          <v-btn :style="{textTransform:'capitalize'}"
-                 v-if="userOrganizationsRelatedWithIncident.length > 0"
-                 @click.stop="dialogFollowUp = true"
-                 color="primary"
-          >
-            Update Tindak Lanjut
-          </v-btn>
+          <v-btn-toggle v-if="userOrganizationsRelatedWithIncident.length > 0" dense>
+            <v-btn :style="{textTransform:'capitalize'}"
+                   v-if="userOrganizationsRelatedWithIncident.length > 0"
+                   @click.stop="dialogFollowUp = true"
+                   class="primary white--text"
+            >
+              Update Tindak Lanjut
+            </v-btn>
+            <!-- <v-btn icon class="primary">
+              <v-icon v-text="'mdi-chevron-down'" class=" white--text" />
+            </v-btn> -->
+          </v-btn-toggle>
         </v-col>
       </v-row>
       <v-chip :text-color="`${$vuetify.theme.dark ? 'white' : 'black'}`"

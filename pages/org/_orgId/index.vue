@@ -15,10 +15,12 @@
                map-type-id="terrain"
                style="width: 100%; height: 100%"
       >
-        <GmapMarker v-for="incident in incidents"
-                    :key="`mapmar${incident.id}`"
-                    :position="{lat: incident.locationLat, lng: incident.locationLng}"
-        />
+        <gmap-cluster>
+          <GmapMarker v-for="incident in incidents"
+                      :key="`mapmar${incident.id}`"
+                      :position="{lat: incident.locationLat, lng: incident.locationLng}"
+          />
+        </gmap-cluster>
       </GmapMap>
     </v-navigation-drawer>
     <v-container>

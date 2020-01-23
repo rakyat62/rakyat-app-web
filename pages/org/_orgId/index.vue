@@ -45,9 +45,14 @@
                      append
                      color="primary"
               >
-                <v-icon v-text="'mdi-chart-line'" left />
-                stats
+                <v-icon v-text="'mdi-chart-line'" />
               </v-btn>
+              <!-- <v-btn to="members"
+                     append
+                     color="primary"
+              >
+                <v-icon v-text="'mdi-account-group'" />
+              </v-btn> -->
             </v-col>
             <v-col>
               <v-select :items="filterStatusItems"

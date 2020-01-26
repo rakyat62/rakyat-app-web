@@ -15,12 +15,10 @@
                map-type-id="terrain"
                style="width: 100%; height: 100%"
       >
-        <gmap-cluster>
-          <GmapMarker v-for="incident in incidents"
-                      :key="`mapmar${incident.id}`"
-                      :position="{lat: incident.locationLat, lng: incident.locationLng}"
-          />
-        </gmap-cluster>
+        <GmapMarker v-for="incident in incidents"
+                    :key="`mapmar${incident.id}`"
+                    :position="{lat: incident.locationLat, lng: incident.locationLng}"
+        />
       </GmapMap>
     </v-navigation-drawer>
     <v-container>
@@ -173,7 +171,7 @@ const queryOrganization = gql`query($id: Int!) {
 
 const queryIncidents = gql`query($status: IncidentStatus!, $labels: [Int!]) {
   incidents(status: $status, labels: $labels) {
-    nodes {
+    nodes (orderBy: { field: createdAt, direction: DESC }) {
       id
       information
       locationLat
@@ -286,7 +284,7 @@ export default {
             labels: this.filterLabels
           }
         })
-        this.incidents = data.incidents.nodes.sort((first, second) => (first.createdAt > second.createdAt) ? -1 : ((second.createdAt > first.createdAt) ? 1 : 0))
+        this.incidents = data.incidents.nodes
         this.loadingIncidents = false
       } catch (error) {
         this.loadingIncidents = false

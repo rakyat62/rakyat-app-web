@@ -142,7 +142,7 @@ export default {
       try {
         this.loadingSubmit = true
         const images = await uploadFiels(this.inputImages)
-        await this.$apollo.mutate({
+        const { data } = await this.$apollo.mutate({
           mutation: mutationCreateIncident,
           variables: {
             information: this.additionalInformation,
@@ -152,8 +152,9 @@ export default {
             images
           }
         })
+        const id = data.createIncident.id
+        this.$router.push(`/incidents/${id}`)
         this.loadingSubmit = false
-        this.$router.push('/')
       } catch (error) {
         console.error(error)
         this.loadingSubmit = false

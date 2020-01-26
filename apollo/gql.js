@@ -17,12 +17,6 @@ export const mutationCreateIncident = gql`mutation($information: String!, $lat: 
     images: $images
   }) {
     id
-    information
-    locationLat
-    locationLng
-    createdBy {
-      username
-    }
   }
 }`
 

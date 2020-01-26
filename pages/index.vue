@@ -46,7 +46,7 @@
             </div>
             <v-carousel :show-arrows="false"
                         height="200px"
-                        hide-delimiters
+                        hide-delimiter-background
             >
               <v-carousel-item
                 v-for="(img,i) in incident.images"

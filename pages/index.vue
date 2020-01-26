@@ -11,23 +11,29 @@
             <v-skeleton-loader type="avatar" tile />
           </v-col>
         </v-row>
-        <v-row v-else class="mt-1">
-          <v-col v-for="label in incidentLabels"
-                 :key="label.id"
-                 cols="4"
-                 class="text-center my-0 py-0"
-          >
-            <v-btn :style="{ borderWidth: '2px', borderRadius: '25%' }"
-                   :to="`/incidents/new/${label.id}`"
-                   icon
-                   large
-                   fab
+        <template v-else>
+          <v-subheader>laporkan Kejadian</v-subheader>
+          <v-row class="mt-1">
+            <v-col v-for="label in incidentLabels"
+                   :key="label.id"
+                   cols="4"
+                   class="text-center my-0 py-0"
             >
-              <v-icon v-text="label.icon" large />
-            </v-btn>
-            <p>{{ label.name }}</p>
-          </v-col>
-        </v-row>
+              <v-btn :style="{ borderWidth: '2px', borderRadius: '25%' }"
+                     :to="`/incidents/new/${label.id}`"
+                     large
+                     depressed
+                     color="primary"
+                     fab
+              >
+                <v-icon v-text="label.icon" large />
+              </v-btn>
+              <p>{{ label.name }}</p>
+            </v-col>
+          </v-row>
+        </template>
+
+        <v-divider class="mt-6" />
 
         <template v-if="loadingIncidents">
           <v-skeleton-loader v-for="i in 4"
@@ -37,9 +43,13 @@
           />
         </template>
         <template v-else>
+          <v-subheader>
+            Akhir-akhir ini dilaporkan
+          </v-subheader>
+
           <v-card v-for="incident in incidents"
                   :key="incident.id"
-                  class="mt-4"
+                  class="mb-4"
           >
             <div class="caption px-4 py-2">
               {{ formatDate(incident.createdAt, 'relative') }}

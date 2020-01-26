@@ -41,8 +41,8 @@
                   :key="incident.id"
                   class="mt-4"
           >
-            <div class="body-1 px-4 py-2">
-              {{ incident.createdBy.username }}
+            <div class="caption px-4 py-2">
+              {{ formatDate(incident.createdAt, 'relative') }}
             </div>
             <v-carousel :show-arrows="false"
                         v-if="incident.images.length > 0"
@@ -62,8 +62,9 @@
             <v-row class="px-4">
               <v-col :style="{cursor: 'pointer'}"
                      @click="$router.push(`/incidents/${incident.id}`)"
-                     class="title"
+                     class="title pb-0"
               >
+                <v-icon v-text="incident.label.icon" />
                 {{ incident.label.name }}
               </v-col>
               <v-col cols="auto">
@@ -84,7 +85,8 @@
 
             <v-card-text class="text--primary pt-0">
               <div class="caption">
-                {{ formatDate(incident.createdAt, 'relative') }}
+                dilaporkan oleh
+                <span v-text="incident.createdBy.username" class="font-weight-medium" />
               </div>
             </v-card-text>
           </v-card>
@@ -110,6 +112,7 @@ const queryIncidents = gql`{
       label {
         id
         name
+        icon
       }
       createdBy {
         id

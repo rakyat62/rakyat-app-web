@@ -45,15 +45,20 @@
               {{ incident.createdBy.username }}
             </div>
             <v-carousel :show-arrows="false"
+                        v-if="incident.images.length > 0"
                         height="200px"
                         hide-delimiter-background
             >
-              <v-carousel-item
-                v-for="(img,i) in incident.images"
-                :key="i"
-                :src="img"
+              <v-carousel-item v-for="(img,i) in incident.images"
+                               :key="i"
+                               :src="img"
               />
             </v-carousel>
+            <v-img v-else
+                   class="white--text align-end"
+                   height="200px"
+                   src="https://user-images.githubusercontent.com/21119252/73139764-eab81180-40a3-11ea-969f-2d03dacef24b.png"
+            />
             <v-row class="px-4">
               <v-col :style="{cursor: 'pointer'}"
                      @click="$router.push(`/incidents/${incident.id}`)"
